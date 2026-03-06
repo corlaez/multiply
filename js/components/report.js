@@ -4,6 +4,7 @@
  */
 
 import { Store } from '../store.js';
+import { getProgressColor } from '../utils.js';
 
 export const ReportComponent = {
     init() {
@@ -53,31 +54,20 @@ export const ReportComponent = {
                 // Optional: show answer on hover/content
                 // cell.textContent = r*c; 
 
-                // Determine color
+                // Determine color using shared progress color utility
                 if (!p) {
                     cell.style.backgroundColor = 'var(--bg-surface-elevated)';
                     cell.style.border = '1px solid var(--border-color)';
                 } else {
                     totalReviews += p.totalReviews;
+                    if (p.status === 'mastered') masteredCount++;
 
-                    if (p.status === 'mastered') {
-                        cell.style.backgroundColor = 'var(--success)';
-                        cell.style.color = '#000';
-                        masteredCount++;
-                    } else {
-                        // Calculate ratio
-                        const ratio = p.correctCount / (p.correctCount + p.incorrectCount || 1);
-                        if (ratio < 0.4) {
-                            cell.style.backgroundColor = 'var(--danger)';
-                        } else if (ratio < 0.8) {
-                            cell.style.backgroundColor = 'var(--warning)';
-                            cell.style.color = '#000';
-                        } else {
-                            // Close to mastered
-                            cell.style.backgroundColor = '#fde047'; // yellow
-                            cell.style.color = '#000';
-                        }
-                    }
+                    const color = getProgressColor(p);
+                    cell.style.backgroundColor = color;
+
+                    // Dark text on light-colored cells for readability
+                    const lightCells = ['#a3e635', 'var(--warning)', 'var(--success)'];
+                    cell.style.color = lightCells.includes(color) ? '#000' : 'inherit';
                 }
 
                 grid.appendChild(cell);

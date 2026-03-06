@@ -6,6 +6,7 @@
 import { Store } from '../store.js';
 import { SM2 } from '../sm2.js';
 import { i18n } from '../i18n.js';
+import { getProgressColor } from '../utils.js';
 
 export const FlashcardsComponent = {
     init() {
@@ -37,6 +38,7 @@ export const FlashcardsComponent = {
             btn.textContent = i;
 
             // Calculate proficiency overall for this number to color it segment by segment
+            const allFlashcards = Store.getAllFlashcards();
             let conicStops = [];
             let idx = 0;
 
@@ -45,20 +47,23 @@ export const FlashcardsComponent = {
                 const key2 = `${j}x${i}`;
                 const p1 = progress[key1];
                 const p2 = progress[key2];
+                const fc1 = allFlashcards[key1] || null;
+                const fc2 = allFlashcards[key2] || null;
 
-                let isMastered = false;
-                let isLearning = false;
+                // Use whichever key has data; prefer the more advanced state
+                // getProgressColor returns a CSS value — pick the "better" of the two
+                const color1 = getProgressColor(p1, fc1);
+                const color2 = getProgressColor(p2, fc2);
 
-                if (p1 && p1.status === 'mastered') isMastered = true;
-                if (p2 && p2.status === 'mastered') isMastered = true;
-
-                if (p1 && p1.status === 'learning') isLearning = true;
-                if (p2 && p2.status === 'learning') isLearning = true;
-
-                // Determine segment color
-                let color = 'var(--border-color)';
-                if (isMastered) color = 'var(--success)';
-                else if (isLearning) color = 'var(--warning)';
+                // Priority ranking so we show the most optimistic state for symmetric pairs
+                const rank = (c) => {
+                    if (c === 'var(--success)') return 4;
+                    if (c === '#fde047') return 3;
+                    if (c === 'var(--warning)') return 2;
+                    if (c === 'var(--danger)') return 1;
+                    return 0; // border-color / unseen
+                };
+                const color = rank(color1) >= rank(color2) ? color1 : color2;
 
                 let startDeg = (idx * 360) / 11;
                 let endDeg = ((idx + 1) * 360) / 11;
