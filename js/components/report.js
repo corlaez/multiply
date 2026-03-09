@@ -66,7 +66,7 @@ export const ReportComponent = {
                     cell.style.backgroundColor = color;
 
                     // Dark text on light-colored cells for readability
-                    const lightCells = ['#a3e635', 'var(--warning)', 'var(--success)'];
+                    const lightCells = ['#d4f700', 'var(--warning)', 'var(--success)'];
                     cell.style.color = lightCells.includes(color) ? '#000' : 'inherit';
                 }
 

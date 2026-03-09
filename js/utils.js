@@ -36,7 +36,7 @@ export function getProgressColor(p, flashcard = null) {
 
         if (ratio >= 0.65) {
             // Near-mastered: doing well but not yet promoted
-            return '#a3e635'; // lime — visually "almost green"
+            return '#d4f700'; // chartreuse-yellow — clearly "almost green" but not green
         } else if (ratio >= 0.33) {
             // Learning: some correct answers
             return 'var(--warning)';
@@ -49,7 +49,7 @@ export function getProgressColor(p, flashcard = null) {
     // No ratio data yet — fall back to flashcard bucket as a signal
     if (flashcard !== null && flashcard.bucket !== undefined) {
         const bucket = flashcard.bucket;
-        if (bucket >= 3) return '#fde047';       // Near-mastered
+        if (bucket >= 3) return '#d4f700';       // Near-mastered
         if (bucket === 2) return 'var(--warning)'; // Learning
         if (bucket === 1) return 'var(--danger)';  // Struggling (came back from wrong)
     }

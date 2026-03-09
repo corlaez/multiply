@@ -42,24 +42,9 @@ export const FlashcardsComponent = {
             let idx = 0;
 
             for (let j = 2; j <= 12; j++) {
-                const key1 = `${i}x${j}`;
-                const key2 = `${j}x${i}`;
-                const card1 = allCards[key1] || null;
-                const card2 = allCards[key2] || null;
-
-                // getProgressColor accepts the unified card object directly
-                const color1 = getProgressColor(card1, card1);
-                const color2 = getProgressColor(card2, card2);
-
-                // Show the more optimistic state for symmetric pairs (e.g. 3x5 vs 5x3)
-                const rank = (c) => {
-                    if (c === 'var(--success)') return 4;
-                    if (c === '#a3e635') return 3;
-                    if (c === 'var(--warning)') return 2;
-                    if (c === 'var(--danger)') return 1;
-                    return 0; // unseen
-                };
-                const color = rank(color1) >= rank(color2) ? color1 : color2;
+                // Only consider i×j (operation order: button i is always the left operand)
+                const card = allCards[`${i}x${j}`] || null;
+                const color = getProgressColor(card, card);
 
                 let startDeg = (idx * 360) / 11;
                 let endDeg = ((idx + 1) * 360) / 11;
@@ -95,7 +80,7 @@ export const FlashcardsComponent = {
         // Ensure all possible cards based on toggles exist in our selection pool
         for (let i of baseSet) {
             for (let j = 2; j <= 12; j++) {
-                const keys = [`${i}x${j}`, `${j}x${i}`];
+                const keys = [`${i}x${j}`]; // only i×j, never j×i
                 for (let key of keys) {
                     if (!allCards[key]) {
                         allCards[key] = { bucket: 0 };
