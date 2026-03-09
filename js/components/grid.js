@@ -109,7 +109,7 @@ export const GridComponent = {
             e.target.style.backgroundColor = 'rgba(74, 222, 128, 0.2)'; // Success light
             e.target.style.color = 'var(--success)';
             e.target.readOnly = true; // Lock it in
-            Store.saveProgress(factKey, 'correct');
+            Store.rateCard(factKey, 4); // quality 4 = Good (correct)
             // Auto advance logic could be added here
         } else {
             // Only turn red if length matches or user presses enter? 

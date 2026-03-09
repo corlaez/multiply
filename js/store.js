@@ -1,32 +1,59 @@
 /**
  * store.js
  * Handles data persistence in localStorage.
+ *
+ * Data shape (v2):
+ *   cards[key]: { bucket, status, totalReviews, correctCount, incorrectCount }
+ *
+ * Migration: v1 data (separate `flashcards` + `progress` keys) is merged on first load.
  */
 
 const STORAGE_KEY = 'multiply_app_data';
 
 const defaultState = {
-    version: 1,
+    version: 2,
     settings: {
         theme: 'dark',
         language: 'en',
         gridSize: 12
     },
-    // Progress for reports/stats { '3x4': { status: 'mastered', ... } }
-    progress: {},
-    // Spaced repetition flashcards data
-    flashcards: {}
+    // Unified card records: scheduling + performance in one place
+    // { '3x4': { bucket, status, totalReviews, correctCount, incorrectCount } }
+    cards: {}
 };
 
 /**
  * Validates and retrieves the state from localStorage.
+ * Migrates v1 data (separate flashcards + progress) into v2 (unified cards).
  */
 function getState() {
     try {
         const data = localStorage.getItem(STORAGE_KEY);
         if (data) {
             const parsed = JSON.parse(data);
-            // Handle future migrations here based on parsed.version
+
+            // --- v1 → v2 migration ---
+            if (!parsed.cards && (parsed.flashcards || parsed.progress)) {
+                parsed.cards = {};
+                const fc = parsed.flashcards || {};
+                const pr = parsed.progress || {};
+                const allKeys = new Set([...Object.keys(fc), ...Object.keys(pr)]);
+                for (const key of allKeys) {
+                    parsed.cards[key] = {
+                        bucket: fc[key]?.bucket ?? 0,
+                        status: pr[key]?.status ?? 'new',
+                        totalReviews: pr[key]?.totalReviews ?? 0,
+                        correctCount: pr[key]?.correctCount ?? 0,
+                        incorrectCount: pr[key]?.incorrectCount ?? 0,
+                    };
+                }
+                delete parsed.flashcards;
+                delete parsed.progress;
+                parsed.version = 2;
+                // Persist migration immediately
+                saveState({ ...defaultState, ...parsed });
+            }
+
             return { ...defaultState, ...parsed };
         }
     } catch (e) {
@@ -61,53 +88,77 @@ export const Store = {
         return getState().settings;
     },
 
-    getFlashcard(factKey) {
-        const state = getState();
-        return state.flashcards[factKey] || null;
+    // -------------------------------------------------------------------------
+    // Unified card API
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns all card records keyed by fact key (e.g. '3x4').
+     * Each record: { bucket, status, totalReviews, correctCount, incorrectCount }
+     */
+    getCards() {
+        return getState().cards;
     },
 
-    saveFlashcard(factKey, cardData) {
+    /**
+     * Returns the card record for a single fact key, or null if unseen.
+     */
+    getCard(factKey) {
+        return getState().cards[factKey] || null;
+    },
+
+    /**
+     * Merges the provided data into the card record for factKey.
+     * Use this to update the bucket directly (e.g. after rating).
+     */
+    saveCard(factKey, data) {
         const state = getState();
-        state.flashcards[factKey] = cardData;
+        state.cards[factKey] = { ...(state.cards[factKey] || {}), ...data };
         saveState(state);
     },
 
-    getAllFlashcards() {
-        return getState().flashcards;
-    },
-
-    saveProgress(factKey, status, extraData = {}) {
+    /**
+     * Records a rating result for a fact key.
+     * Updates bucket (scheduling) and correctCount/incorrectCount/status (performance).
+     *
+     * @param {string} factKey   - e.g. '3x4'
+     * @param {number} quality   - 1=Again, 3=Hard, 4=Good, 5=Easy
+     */
+    rateCard(factKey, quality) {
         const state = getState();
-        if (!state.progress[factKey]) {
-            state.progress[factKey] = {
-                status: 'new', // new, learning, mastered
-                totalReviews: 0,
-                correctCount: 0,
-                incorrectCount: 0
+        if (!state.cards[factKey]) {
+            state.cards[factKey] = {
+                bucket: 0, status: 'new', totalReviews: 0, correctCount: 0, incorrectCount: 0
             };
         }
 
-        const p = state.progress[factKey];
-        p.totalReviews += 1;
-        if (status === 'correct') {
-            p.correctCount += 1;
+        const card = state.cards[factKey];
+
+        // Update scheduling bucket
+        if (quality === 1) card.bucket = 1; // Again
+        else if (quality === 3) card.bucket = 2; // Hard
+        else if (quality === 4) card.bucket = 3; // Good
+        else if (quality === 5) card.bucket = 4; // Easy
+
+        // Update performance counters
+        card.totalReviews += 1;
+        const isCorrect = quality >= 4;
+        if (isCorrect) {
+            card.correctCount += 1;
         } else {
-            p.incorrectCount += 1;
+            card.incorrectCount += 1;
         }
 
-        // Simple mastery heuristic for heatmap: 
-        // 5 consecutive correct or high ratio
-        if (p.correctCount > 5 && (p.correctCount / (p.correctCount + p.incorrectCount)) > 0.8) {
-            p.status = 'mastered';
+        // Mastery heuristic: 5+ correct answers with >80% accuracy
+        if (card.correctCount > 5 &&
+            (card.correctCount / (card.correctCount + card.incorrectCount)) > 0.8) {
+            card.status = 'mastered';
         } else {
-            p.status = 'learning';
+            card.status = 'learning';
         }
 
         saveState(state);
-    },
-
-    getProgress() {
-        return getState().progress;
+        return card;
     },
 
     resetAllData() {

@@ -18,7 +18,7 @@ export const ReportComponent = {
     },
 
     render() {
-        const progress = Store.getProgress();
+        const cards = Store.getCards();
         const settings = Store.getSettings();
         const size = settings.gridSize || 12;
 
@@ -39,7 +39,7 @@ export const ReportComponent = {
         for (let r = 1; r <= size; r++) {
             for (let c = 1; c <= size; c++) {
                 const key = `${r}x${c}`;
-                const p = progress[key];
+                const p = cards[key];
 
                 const cell = document.createElement('div');
                 cell.style.aspectRatio = '1/1';

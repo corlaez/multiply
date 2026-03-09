@@ -30,38 +30,34 @@ export const FlashcardsComponent = {
     renderToggles() {
         if (!this.togglesContainer) return;
         this.togglesContainer.innerHTML = '';
-        const progress = Store.getProgress();
+        const allCards = Store.getCards();
 
         for (let i = 2; i <= 12; i++) {
             const btn = document.createElement('button');
             btn.className = `toggle-btn ${this.activeToggles.has(i) ? 'active' : ''}`;
             btn.textContent = i;
 
-            // Calculate proficiency overall for this number to color it segment by segment
-            const allFlashcards = Store.getAllFlashcards();
+            // Build conic gradient: one segment per column j (2–12)
             let conicStops = [];
             let idx = 0;
 
             for (let j = 2; j <= 12; j++) {
                 const key1 = `${i}x${j}`;
                 const key2 = `${j}x${i}`;
-                const p1 = progress[key1];
-                const p2 = progress[key2];
-                const fc1 = allFlashcards[key1] || null;
-                const fc2 = allFlashcards[key2] || null;
+                const card1 = allCards[key1] || null;
+                const card2 = allCards[key2] || null;
 
-                // Use whichever key has data; prefer the more advanced state
-                // getProgressColor returns a CSS value — pick the "better" of the two
-                const color1 = getProgressColor(p1, fc1);
-                const color2 = getProgressColor(p2, fc2);
+                // getProgressColor accepts the unified card object directly
+                const color1 = getProgressColor(card1, card1);
+                const color2 = getProgressColor(card2, card2);
 
-                // Priority ranking so we show the most optimistic state for symmetric pairs
+                // Show the more optimistic state for symmetric pairs (e.g. 3x5 vs 5x3)
                 const rank = (c) => {
                     if (c === 'var(--success)') return 4;
-                    if (c === '#fde047') return 3;
+                    if (c === '#a3e635') return 3;
                     if (c === 'var(--warning)') return 2;
                     if (c === 'var(--danger)') return 1;
-                    return 0; // border-color / unseen
+                    return 0; // unseen
                 };
                 const color = rank(color1) >= rank(color2) ? color1 : color2;
 
@@ -71,9 +67,9 @@ export const FlashcardsComponent = {
                 idx++;
             }
 
-            // Apply granular conic gradient
+            // Apply granular conic gradient border
             btn.style.background = `linear-gradient(var(--bg-surface-elevated), var(--bg-surface-elevated)) padding-box, conic-gradient(${conicStops.join(', ')}) border-box`;
-            btn.style.borderColor = 'transparent'; // Allows border-box gradient to show through
+            btn.style.borderColor = 'transparent';
 
             btn.addEventListener('click', () => {
                 if (this.activeToggles.has(i)) {
@@ -91,7 +87,7 @@ export const FlashcardsComponent = {
     },
 
     loadSession() {
-        const allCards = Store.getAllFlashcards();
+        const allCards = Store.getCards();
         this.buckets = { 0: [], 1: [], 2: [], 3: [], 4: [] };
 
         const baseSet = this.activeToggles.size > 0 ? Array.from(this.activeToggles) : [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -102,19 +98,16 @@ export const FlashcardsComponent = {
                 const keys = [`${i}x${j}`, `${j}x${i}`];
                 for (let key of keys) {
                     if (!allCards[key]) {
-                        // Create as new (Bucket 0) on the fly
                         allCards[key] = { bucket: 0 };
                     }
                     const bucketValue = allCards[key].bucket !== undefined ? allCards[key].bucket : 0;
-
-                    // Fallback to max bucket
                     const b = bucketValue >= 0 && bucketValue <= 4 ? bucketValue : 4;
                     this.buckets[b].push({ key, ...allCards[key] });
                 }
             }
         }
 
-        // De-duplicate in case of keys like 2x2, 3x3 where both variations are identical
+        // De-duplicate (e.g. 2x2, 3x3 where both key variants are identical)
         let totalCardsInPlay = 0;
         for (let b = 0; b <= 4; b++) {
             const unique = [];
@@ -227,18 +220,8 @@ export const FlashcardsComponent = {
     },
 
     handleRating(quality) {
-        let targetBucket = 0;
-        if (quality === 1) targetBucket = 1;      // Again
-        else if (quality === 3) targetBucket = 2; // Hard
-        else if (quality === 4) targetBucket = 3; // Good
-        else if (quality === 5) targetBucket = 4; // Easy
-
-        this.currentCard.bucket = targetBucket;
-
-        Store.saveFlashcard(this.currentCard.key, this.currentCard);
-
-        // Save progress for heatmap
-        Store.saveProgress(this.currentCard.key, quality >= 4 ? 'correct' : 'incorrect');
+        // Single call updates bucket + performance counters + mastery status
+        Store.rateCard(this.currentCard.key, quality);
 
         // Update toggles to reflect immediate proficiency change visually
         this.renderToggles();

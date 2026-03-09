@@ -13,10 +13,9 @@
  *  - Near-Mastered: ratio 0.65–0.8 (or bucket >= 3) → #fde047            💛
  *  - Mastered    : status === 'mastered'             → var(--success)    🟢
  *
- * @param {object|null} p          - Progress object from Store.getProgress()[key],
- *                                   shape: { status, correctCount, incorrectCount, totalReviews }
- * @param {object|null} flashcard  - Optional flashcard object from Store.getAllFlashcards()[key],
- *                                   shape: { bucket } (0–4)
+ * @param {object|null} p          - Card object from Store.getCards()[key],
+ *                                   shape: { bucket, status, correctCount, incorrectCount, totalReviews }
+ * @param {object|null} flashcard  - Optional (same card object) used for bucket fallback when no ratio exists yet.
  * @returns {string} A CSS color value (variable reference or hex string).
  */
 export function getProgressColor(p, flashcard = null) {
