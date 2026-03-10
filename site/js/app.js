@@ -9,6 +9,14 @@ import { GridComponent } from './components/grid.js';
 import { FlashcardsComponent } from './components/flashcards.js';
 import { ReportComponent } from './components/report.js';
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((reg) => console.log('SW registered:', reg))
+      .catch((err) => console.log('SW failed:', err));
+  });
+}
+
 class App {
     constructor() {
         this.currentView = 'grid';
