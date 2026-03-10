@@ -25,7 +25,7 @@ export const GridComponent = {
         table.className = 'practice-grid';
 
         // Styling via JS for simplicity, though CSS classes are ideal
-        table.style.borderCollapse = 'collapse';
+        table.style.borderSpacing = '0';
         table.style.margin = '0 auto';
 
         // Header row
