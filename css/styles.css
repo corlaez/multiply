@@ -542,6 +542,24 @@ hr {
     margin-bottom: var(--spacing-2);
 }
 
+/* Footer */
+.app-footer {
+    text-align: center;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+}
+
+.app-footer a {
+    color: var(--accent-primary);
+    text-decoration: none;
+}
+
+.app-footer a:hover {
+    text-decoration: underline;
+}
+
 /* Responsiveness */
 @media (max-width: 768px) {
     .navbar {
@@ -600,6 +618,10 @@ hr {
         height: calc(100% - 4rem);
         max-height: none;
         min-height: 0;
+    }
+
+    .app-footer {
+        flex-shrink: 0;
     }
 }
 
