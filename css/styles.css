@@ -564,4 +564,35 @@ hr {
     .view-header h2 {
         font-size: 1.5rem;
     }
+
+    /* Lock grid view to viewport so sticky headers stay visible */
+    #app {
+        height: 100dvh;
+        overflow: hidden;
+    }
+
+    .content-area {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-height: 0;
+    }
+
+    .view.active {
+        flex: 1;
+        overflow: auto;
+        min-height: 0;
+    }
+
+    #view-grid.active {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    #view-grid .grid-wrapper {
+        flex: 1;
+        max-height: none;
+        min-height: 0;
+    }
 }

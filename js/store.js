@@ -161,6 +161,53 @@ export const Store = {
         return card;
     },
 
+    // -------------------------------------------------------------------------
+    // UI state persistence
+    // -------------------------------------------------------------------------
+
+    getActiveView() {
+        return getState().activeView || 'grid';
+    },
+
+    setActiveView(viewName) {
+        const state = getState();
+        state.activeView = viewName;
+        saveState(state);
+    },
+
+    getActiveToggles() {
+        const state = getState();
+        return state.activeToggles || null;
+    },
+
+    setActiveToggles(arr) {
+        const state = getState();
+        state.activeToggles = arr;
+        saveState(state);
+    },
+
+    getGridValues() {
+        return getState().gridValues || {};
+    },
+
+    setGridValue(row, col, value) {
+        const state = getState();
+        if (!state.gridValues) state.gridValues = {};
+        const key = `${row}x${col}`;
+        if (value === '' || value == null) {
+            delete state.gridValues[key];
+        } else {
+            state.gridValues[key] = value;
+        }
+        saveState(state);
+    },
+
+    clearGridValues() {
+        const state = getState();
+        state.gridValues = {};
+        saveState(state);
+    },
+
     resetAllData() {
         localStorage.removeItem(STORAGE_KEY);
     }

@@ -12,6 +12,7 @@ export const GridComponent = {
         this.btnGenerate = document.getElementById('btn-generate-grid');
 
         this.btnGenerate.addEventListener('click', () => {
+            Store.clearGridValues();
             this.renderGrid(12);
         });
 
@@ -92,6 +93,29 @@ export const GridComponent = {
         }
 
         this.container.appendChild(table);
+
+        // Restore persisted grid values
+        const saved = Store.getGridValues();
+        for (const [key, value] of Object.entries(saved)) {
+            const [r, c] = key.split('x').map(Number);
+            const input = table.querySelector(`input[data-row="${r}"][data-col="${c}"]`);
+            if (input && value) {
+                input.value = value;
+                const expected = r * c;
+                const val = parseInt(value, 10);
+                if (val === expected) {
+                    input.style.backgroundColor = 'rgba(74, 222, 128, 0.2)';
+                    input.style.color = 'var(--success)';
+                    input.readOnly = true;
+                } else {
+                    const expectedStr = expected.toString();
+                    if (value.length >= expectedStr.length) {
+                        input.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                        input.style.color = 'var(--danger)';
+                    }
+                }
+            }
+        }
     },
 
     handleInput(e, row, col) {
@@ -102,8 +126,11 @@ export const GridComponent = {
         if (!e.target.value) {
             e.target.style.backgroundColor = 'transparent';
             e.target.style.color = 'var(--text-primary)';
+            Store.setGridValue(row, col, '');
             return;
         }
+
+        Store.setGridValue(row, col, e.target.value);
 
         if (val === expected) {
             e.target.style.backgroundColor = 'rgba(74, 222, 128, 0.2)'; // Success light

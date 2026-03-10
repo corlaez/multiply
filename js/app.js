@@ -60,8 +60,9 @@ class App {
         // Setup Event Listeners
         this.setupEventListeners();
 
-        // Render initial view
-        this.switchView('grid');
+        // Render initial view (restore persisted tab or default to 'grid')
+        const savedView = Store.getActiveView();
+        this.switchView(savedView);
     }
 
     setupEventListeners() {
@@ -145,6 +146,7 @@ class App {
         this.views[viewName].classList.add('active');
 
         this.currentView = viewName;
+        Store.setActiveView(viewName);
 
         // Trigger lifecycle hooks if components define them
         if (viewName === 'flashcards' && typeof FlashcardsComponent.onMount === 'function') {

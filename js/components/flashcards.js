@@ -15,8 +15,11 @@ export const FlashcardsComponent = {
         this.newCountEl = document.getElementById('cards-new-count');
         this.togglesContainer = document.getElementById('flashcard-toggles');
 
-        // Default to all active
-        this.activeToggles = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+        // Restore persisted toggles or default to all active
+        const saved = Store.getActiveToggles();
+        this.activeToggles = saved
+            ? new Set(saved)
+            : new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 
         this.lastSeenKey = null;
     },
@@ -64,6 +67,7 @@ export const FlashcardsComponent = {
                     this.activeToggles.add(i);
                     btn.classList.add('active');
                 }
+                Store.setActiveToggles([...this.activeToggles]);
                 this.loadSession();
             });
 
