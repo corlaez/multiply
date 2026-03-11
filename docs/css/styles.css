@@ -1,3 +1,8 @@
+/* Prevent double-tap zoom on mobile (Safari, Chrome, Android) */
+html {
+    touch-action: manipulation;
+}
+
 /* Base Variables - Premium Aesthetics */
 :root {
     /* Typgraphy */
