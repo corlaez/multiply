@@ -53,11 +53,12 @@ class App {
         }
 
         // Apply Language
-        if (settings.language) {
+        if (settings.language && settings.language !== 'auto') {
             this.langSelect.value = settings.language;
             i18n.setLanguage(settings.language);
         } else {
-            i18n.setLanguage('en');
+            this.langSelect.value = 'auto';
+            i18n.setLanguage(i18n.detectLanguage());
         }
 
         // Initialize Components
@@ -102,7 +103,7 @@ class App {
         this.langSelect.addEventListener('change', (e) => {
             const lang = e.target.value;
             Store.setSettings({ language: lang });
-            i18n.setLanguage(lang);
+            i18n.setLanguage(lang === 'auto' ? i18n.detectLanguage() : lang);
         });
 
         this.themeSelect.addEventListener('change', (e) => {

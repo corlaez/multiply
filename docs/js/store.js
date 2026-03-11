@@ -14,7 +14,7 @@ const defaultState = {
     version: 2,
     settings: {
         theme: 'dark',
-        language: 'en',
+        language: null,
         gridSize: 12
     },
     // Unified card records: scheduling + performance in one place

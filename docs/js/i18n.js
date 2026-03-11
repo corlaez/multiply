@@ -38,7 +38,8 @@ const dictionaries = {
         btn_hard: "Hard",
         btn_good: "Good",
         btn_easy: "Easy",
-        grid_placeholder_prefix: "Type"
+        grid_placeholder_prefix: "Type",
+        settings_lang_auto: "Auto (System)"
     },
     es: {
         app_title: "Multiplica",
@@ -74,7 +75,8 @@ const dictionaries = {
         btn_hard: "Difícil",
         btn_good: "Bien",
         btn_easy: "Fácil",
-        grid_placeholder_prefix: "Escribe"
+        grid_placeholder_prefix: "Escribe",
+        settings_lang_auto: "Auto (Sistema)"
     },
     fr: {
         app_title: "Multiplier",
@@ -110,13 +112,23 @@ const dictionaries = {
         btn_hard: "Difficile",
         btn_good: "Bien",
         btn_easy: "Facile",
-        grid_placeholder_prefix: "Taper"
+        grid_placeholder_prefix: "Taper",
+        settings_lang_auto: "Auto (Système)"
     }
 };
 
 let currentLang = 'en';
 
 export const i18n = {
+    detectLanguage() {
+        const langs = navigator.languages || [navigator.language || 'en'];
+        for (const tag of langs) {
+            const base = tag.split('-')[0].toLowerCase();
+            if (dictionaries[base]) return base;
+        }
+        return 'en';
+    },
+
     setLanguage(lang) {
         if (dictionaries[lang]) {
             currentLang = lang;
