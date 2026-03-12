@@ -11,7 +11,7 @@ import { ReportComponent } from './components/report.js';
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('/sw-v2.js')
       .then((reg) => console.log('SW registered:', reg))
       .catch((err) => console.log('SW failed:', err));
   });
