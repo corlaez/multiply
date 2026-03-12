@@ -151,6 +151,7 @@ export const GridComponent = {
             e.target.readOnly = true; // Lock it in
             Store.rateCard(factKey, 4); // quality 4 = Good (correct)
             this.focusNextInput(e.target);
+            window.goatcounter?.count?.({ path: 'table-fill-attempt/success', title: 'Grid: success', event: true });
         } else {
             // Only turn red if length matches or user presses enter? 
             // For now, let's just make it slightly red if typed
@@ -159,6 +160,7 @@ export const GridComponent = {
                 e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
                 e.target.style.color = 'var(--danger)';
                 e.target.select();
+                window.goatcounter?.count?.({ path: 'table-fill-attempt/fail', title: 'Grid: fail', event: true });
             }
         }
     }

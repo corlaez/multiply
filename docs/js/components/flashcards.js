@@ -173,7 +173,7 @@ export const FlashcardsComponent = {
 
         this.container.innerHTML = `
             <div class="flashcard-ui card" style="width: 100%; max-width: 500px; text-align: center; padding: 3rem 2rem; margin: 0 auto;">
-                <div class="card-question" style="font-size: 4rem; font-weight: 700; margin-bottom: 2rem; display: flex; justify-content: center; align-items: center; white-space: nowrap;">
+                <div class="card-question" style="font-weight: 700; margin-bottom: 2rem; display: flex; justify-content: center; align-items: center; white-space: nowrap;">
                     ${a} × ${b}
                     <span id="card-answer-area" class="hidden" style="color: var(--accent-primary); margin-left: 1rem;">= ${answer}</span>
                 </div>
@@ -209,6 +209,10 @@ export const FlashcardsComponent = {
     },
 
     handleRating(quality) {
+        const difficultyLabel = { 1: 'again', 3: 'hard', 4: 'good', 5: 'easy' }[quality] || quality;
+        console.log(difficultyLabel);
+        window.goatcounter?.count?.({ path: `flashcard-rated/${difficultyLabel}`, title: `Flashcard: ${difficultyLabel}`, event: true });
+
         // Single call updates bucket + performance counters + mastery status
         Store.rateCard(this.currentCard.key, quality);
 

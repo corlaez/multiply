@@ -565,8 +565,15 @@ hr {
     text-decoration: underline;
 }
 
+.card-question {
+    font-size: 4rem;
+}
+
 /* Responsiveness */
 @media (max-width: 768px) {
+    .card-question {
+        font-size: 3rem;
+    }
     .navbar {
         flex-direction: column;
         gap: var(--spacing-3);
