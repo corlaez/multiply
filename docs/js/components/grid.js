@@ -120,6 +120,17 @@ export const GridComponent = {
         }
     },
 
+    focusNextInput(current) {
+        const inputs = Array.from(this.container.querySelectorAll('.grid-input'));
+        const idx = inputs.indexOf(current);
+        for (let i = idx + 1; i < inputs.length; i++) {
+            if (!inputs[i].readOnly) {
+                inputs[i].focus();
+                return;
+            }
+        }
+    },
+
     handleInput(e, row, col) {
         const expected = row * col;
         const val = parseInt(e.target.value, 10);
@@ -139,7 +150,7 @@ export const GridComponent = {
             e.target.style.color = 'var(--success)';
             e.target.readOnly = true; // Lock it in
             Store.rateCard(factKey, 4); // quality 4 = Good (correct)
-            // Auto advance logic could be added here
+            this.focusNextInput(e.target);
         } else {
             // Only turn red if length matches or user presses enter? 
             // For now, let's just make it slightly red if typed
@@ -147,8 +158,7 @@ export const GridComponent = {
             if (e.target.value.length >= expectedStr.length) {
                 e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
                 e.target.style.color = 'var(--danger)';
-                // Don't save wrong progress until they fix it, or save immediately
-                // Let's not punish fat-fingering immediately in grid mode
+                e.target.select();
             }
         }
     }
