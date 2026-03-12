@@ -67,6 +67,8 @@ export const GridComponent = {
 
                 const input = document.createElement('input');
                 input.type = 'number';
+                input.inputmode='numeric';
+                input.pattern='[0-9]*';
                 input.className = 'grid-input';
                 // Inline styles for input
                 input.style.width = '3rem';
