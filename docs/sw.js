@@ -1,24 +1,29 @@
 self.addEventListener('install', (event) => {
-  // This ensures the service worker is activated immediately
+  // This ensures the service worker is activated immediately and not wait until all tabs close
   self.skipWaiting();
 });
 
 const CACHE_NAME = 'multiplication-app-v1';
 
 self.addEventListener('fetch', (event) => {
-    event.respondWith(caches.match(event.request).then((res) => res || fetchAndCacheSuccess(event.request)));
+  event.respondWith(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.match(event.request).then((cachedResponse) => {
+        const fetchPromise = fetchAndCacheSuccess(event.request, cache)
+        return cachedResponse || fetchPromise;
+      });
+    })
+  );
 });
 
-function fetchAndCacheSuccess(request) {
-    return fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-                cache.put(request, responseClone);
-            });
-        }
-        return networkResponse;
-    });
+function fetchAndCacheSuccess(request, cache) {
+  return fetch(request).then((networkResponse) => {
+    if (networkResponse && networkResponse.status === 200) {
+      const responseClone = networkResponse.clone();
+      cache.put(request, responseClone);
+    }
+    return networkResponse;
+  });
 }
 
 self.addEventListener('activate', (event) => {
