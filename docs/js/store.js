@@ -166,7 +166,7 @@ export const Store = {
     // -------------------------------------------------------------------------
 
     getActiveView() {
-        return getState().activeView || 'grid';
+        return getState().activeView || 'flashcards';
     },
 
     setActiveView(viewName) {

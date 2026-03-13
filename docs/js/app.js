@@ -69,7 +69,7 @@ class App {
         // Setup Event Listeners
         this.setupEventListeners();
 
-        // Render initial view (restore persisted tab or default to 'grid')
+        // Render initial view (restore persisted tab or default to 'flashcards')
         const savedView = Store.getActiveView();
         this.switchView(savedView);
     }
