@@ -16,7 +16,7 @@ const dictionaries = {
         flashcards_title: "Spaced Repetition",
         flashcards_subtitle: "Optimize your long-term memory.",
         label_due: "Review:",
-        label_new: "New/Learning:",
+
         label_focus: "Focus on specific numbers:",
         msg_no_cards: "No cards due for review right now! Great job.",
         btn_study_ahead: "Study New Cards",
@@ -53,7 +53,7 @@ const dictionaries = {
         flashcards_title: "Repetición Espaciada",
         flashcards_subtitle: "Optimiza tu memoria a largo plazo.",
         label_due: "Repasar:",
-        label_new: "Nuevas:",
+
         label_focus: "Enfócate en números específicos:",
         msg_no_cards: "¡No hay tarjetas pendientes ahora mismo! Gran trabajo.",
         btn_study_ahead: "Estudiar Tarjetas Nuevas",
@@ -90,7 +90,7 @@ const dictionaries = {
         flashcards_title: "Répétition Espacée",
         flashcards_subtitle: "Optimisez votre mémoire à long terme.",
         label_due: "Révision:",
-        label_new: "Nouveau:",
+
         label_focus: "Se concentrer sur des nombres spécifiques:",
         msg_no_cards: "Aucune carte à réviser pour le moment ! Bon travail.",
         btn_study_ahead: "Étudier de Nouvelles Cartes",

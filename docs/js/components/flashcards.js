@@ -12,7 +12,6 @@ export const FlashcardsComponent = {
     init() {
         this.container = document.getElementById('flashcard-container');
         this.dueCountEl = document.getElementById('cards-due-count');
-        this.newCountEl = document.getElementById('cards-new-count');
         this.togglesContainer = document.getElementById('flashcard-toggles');
 
         // Restore persisted toggles or default to all active
@@ -159,10 +158,8 @@ export const FlashcardsComponent = {
     },
 
     updateStats() {
-        const newCount = this.buckets[0].length;
         const reviewCount = this.buckets[1].length + this.buckets[2].length;
         this.dueCountEl.textContent = reviewCount;
-        this.newCountEl.textContent = newCount;
     },
 
     renderCard(cardData, isNew) {
