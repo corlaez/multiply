@@ -90,7 +90,8 @@ body {
 
 /* Header & Navigation */
 .navbar {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-3) var(--spacing-5);
@@ -584,12 +585,17 @@ hr {
     font-size: 4rem;
 }
 
+.actions {
+    justify-self: end;
+}
+
 /* Responsiveness */
 @media (max-width: 768px) {
     .card-question {
         font-size: 3rem;
     }
     .navbar {
+        display: flex;
         flex-direction: column;
         gap: var(--spacing-3);
         padding: var(--spacing-3);
